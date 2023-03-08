@@ -1,0 +1,117 @@
+	/* Class node is defined as :
+    class Node 
+    	int val;	//Value
+    	int ht;		//Height
+    	Node left;	//Left child
+    	Node right;	//Right child
+
+	*/
+
+static Node insert(Node root,int val){
+    Node newNode = new Node();
+    newNode.val = val;
+    newNode.ht = 0;
+    newNode.left = null;
+    newNode.right = null;
+
+    if (root==null) {
+        root = newNode;
+    } else {
+        root=avlInsert(newNode, root);
+    }
+
+    return root;
+}
+
+static public int height(Node x) {
+    if (x == null) return -1;
+    else return x.ht;
+}
+
+static public Node rotateWithLeft(Node c) {
+    Node p;
+
+    p = c.left;
+    c.left = p.right;
+    p.right = c;
+
+    c.ht = Math.max(height(c.left), height(c.right)) + 1;
+    p.ht = Math.max(height(p.left), height(p.right)) + 1;
+
+    return p;
+}
+
+static public Node rotateWithRight(Node c) {
+    Node p;
+
+    p = c.right;
+    c.right = p.left;
+    p.left = c;
+
+    c.ht = Math.max(height(c.left), height(c.right)) + 1;
+    p.ht = Math.max(height(p.left), height(p.right)) + 1;
+
+    return p;
+}
+
+static public Node doubleRotateWithLeft(Node c) {
+    Node tmp;
+
+    c.left = rotateWithRight(c.left);
+    tmp = rotateWithLeft(c);
+
+    return tmp;
+}
+
+static public Node doubleRotateWithRight(Node c) {
+    Node tmp;
+
+    c.right = rotateWithLeft(c.right);
+    tmp = rotateWithRight(c);
+
+    return tmp;
+}
+
+static public Node avlInsert(Node newNode, Node par) {
+   Node newpar = par;
+
+    if (newNode.val < par.val)  {
+        if (par.left == null) {
+            par.left = newNode; 
+        }
+    else {
+         par.left = avlInsert(newNode, par.left);  
+         if ((height(par.left) - height(par.right)) == 2) {
+            if (newNode.val < par.left.val) {
+                newpar=rotateWithLeft(par);
+            } else {
+                newpar=doubleRotateWithLeft(par);
+            }
+         }
+      }
+   }
+    else if (newNode.val > par.val) {
+        if (par.right == null) {
+            par.right = newNode;
+        } else {
+            par.right = avlInsert(newNode, par.right);
+            if ((height(par.right) - height(par.left)) == 2) {
+                if (newNode.val > par.right.val) {
+                    newpar=rotateWithRight(par);
+                }
+                else {
+                    newpar=doubleRotateWithRight(par);
+                }
+            }
+        }
+    }
+
+    if ((par.left == null) && (par.right != null))
+        par.ht = par.right.ht + 1;
+    else if ((par.right == null) && (par.left != null))
+        par.ht = par.left.ht + 1;
+    else
+        par.ht = Math.max(height(par.left), height(par.right)) + 1;
+
+    return newpar;
+    }
